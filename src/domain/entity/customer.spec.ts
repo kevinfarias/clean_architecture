@@ -1,3 +1,6 @@
+import MakeActionAfterTheAddressIsChanged from "../event/customer/handler/make-action-after-the-address-is-changed.handler";
+import MakeActionAfterTheCustomerIsCreated from "../event/customer/handler/make-action-after-the-customer-is-created.handler";
+import eventDispatcher from "../event/eventDispatcher";
 import Address from "./address";
 import Customer from "./customer";
 
@@ -55,5 +58,35 @@ describe("Costumer unit tests", () => {
 
         customer.addRewardPoints(10);
         expect(customer.rewardPoints).toBe(20);
+    });
+
+    it("should notify the listeners when a new customer is created", () => {
+        const enviaConsoleLog1Handler = new MakeActionAfterTheCustomerIsCreated();
+        enviaConsoleLog1Handler.setMessageToLog("Esse é o primeiro console.log do evento: CustomerCreated");
+        const spyHandler1 = jest.spyOn(enviaConsoleLog1Handler, "handle");
+
+        const enviaConsoleLog2Handler = new MakeActionAfterTheCustomerIsCreated();
+        enviaConsoleLog2Handler.setMessageToLog("Esse é o segundo console.log do evento: CustomerCreated");
+        const spyHandler2 = jest.spyOn(enviaConsoleLog2Handler, "handle");
+
+        eventDispatcher.register("CustomerCreatedEvent", enviaConsoleLog1Handler);
+        eventDispatcher.register("CustomerCreatedEvent", enviaConsoleLog2Handler);
+
+        const customer = new Customer("123", "Joaozinho");
+
+        expect(spyHandler1).toBeCalled();
+        expect(spyHandler2).toBeCalled();
+    });
+
+    it("should notify the listeners when a customer has its address changed", () => {
+        const enviaConsoleLogHander = new MakeActionAfterTheAddressIsChanged();
+        const spyHandler = jest.spyOn(enviaConsoleLogHander, "handle");
+
+        eventDispatcher.register("CustomerAddressChangedEvent", enviaConsoleLogHander);
+
+        const customer = new Customer("123", "Joaozinho");
+        customer.changeAddress(new Address("Rua das couves", 123, "12312-12", "Tapejara"))
+
+        expect(spyHandler).toBeCalled();
     })
 })
