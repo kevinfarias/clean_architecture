@@ -15,11 +15,9 @@ export default class Customer extends Entity {
         super();
         this._id = id;
         this._name = name;
+        
         this.validate();
-
-        if (this.notification.hasErrors()) {
-            throw new NotificationError(this.notification.getErrors());
-        }
+        this.throw();
 
         const customerCreatedEvent = new CustomerCreatedEvent({
             id,
@@ -29,6 +27,12 @@ export default class Customer extends Entity {
         eventDispatcher.notify(customerCreatedEvent);
     }
 
+    throw() {
+        if (this.notification.hasErrors()) {
+            throw new NotificationError(this.notification.getErrors());
+        }
+    }
+
     validate() {
         if (this._id.length === 0) {
             this.notification.addError({
@@ -36,7 +40,7 @@ export default class Customer extends Entity {
                 message: "Id is required"
             });
         }
-        
+
         if (this.name.length == 0) {
             this.notification.addError({
                 context: "customer",
@@ -52,11 +56,13 @@ export default class Customer extends Entity {
     changeName(name: string) {
         this._name = name;
         this.validate();
+        this.throw();
     }
 
     changeAddress(address: Address) {
         this._address = address;
         this.validate();
+        this.throw();
 
         const event = new CustomerAddressChangedEvent({
             id: this._id,

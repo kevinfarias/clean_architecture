@@ -1,15 +1,7 @@
 import ProductFactory from "../../../domain/product/factory/product.factory";
 import UpdateProductUseCase from "./update.product.usecase";
 
-const product = ProductFactory.create("a", "Product A", 15);
-
-const input = {
-    id: product.id,
-    name: "Product A Updated",
-    price: 25
-}
-
-const MockRepository = () => {
+const MockRepository = (product: ProductFactory) => {
     return {
         find: jest.fn().mockReturnValue(Promise.resolve(product)),
         findAll: jest.fn(),
@@ -20,7 +12,15 @@ const MockRepository = () => {
 
 describe("Unit test for update product use case", () => {
     it("should update a product successfully", async () => {
-        const productRepository = MockRepository();
+        const product = ProductFactory.create("a", "Product A", 15);
+
+        const input = {
+            id: product.id,
+            name: "Product A Updated",
+            price: 25
+        };
+
+        const productRepository = MockRepository(product);
         const useCase = new UpdateProductUseCase(productRepository);
 
         const output = await useCase.execute(input);
@@ -29,22 +29,35 @@ describe("Unit test for update product use case", () => {
     });
 
     it("should throw an error when name is blank", async () => {
-        const productRepository = MockRepository();
+        const product = ProductFactory.create("a", "Product A", 15);
+
+        const input = {
+            id: product.id,
+            name: "Product A Updated",
+            price: 25
+        };
+
+        const productRepository = MockRepository(product);
         const useCase = new UpdateProductUseCase(productRepository);
 
         input.name = "";
         input.price = 10;
 
-        expect(async () => await useCase.execute(input)).rejects.toThrowError("Name is required");
+        await expect(() => useCase.execute(input)).rejects.toThrowError("product: Name is required");
     });
 
     it("should throw an error when price lower or equal than 0", async () => {
-        const productRepository = MockRepository();
+        const product = ProductFactory.create("a", "Product A", 15);
+
+        const productRepository = MockRepository(product);
         const useCase = new UpdateProductUseCase(productRepository);
 
-        input.name = "Teste";
-        input.price = 0;
+        const input = {
+            id: product.id,
+            name: "Product A Updated",
+            price: 0
+        }
 
-        expect(async () => await useCase.execute(input)).rejects.toThrowError("Price must be greater than 0");
+        await expect(() => useCase.execute(input)).rejects.toThrowError("product: Price must be greater than 0");
     });
 });

@@ -35,6 +35,6 @@ describe("Unit testing the find product use case", () => {
         });
         const useCase = new FindProductUseCase(productRepository);
 
-        expect(async () => await useCase.execute({ id: product.id })).rejects.toThrowError("Product not found");
+        await expect(() => useCase.execute({ id: product.id })).rejects.toThrowError("Product not found");
     })
 })

@@ -41,7 +41,7 @@ describe("Unit testing the create product use case", () => {
         
         input.price = 0;
 
-        expect(async () => await customerUseCase.execute(input)).rejects.toThrowError("Price must be greater than 0");
+        await expect(() => customerUseCase.execute(input)).rejects.toThrowError("Price must be greater than 0");
     });
 
     it("should throw an error when name is missing", async () => {
@@ -51,6 +51,6 @@ describe("Unit testing the create product use case", () => {
         
         input.name = "";
 
-        expect(async () => await customerUseCase.execute(input)).rejects.toThrowError("Name is required");
+        await expect(() => customerUseCase.execute(input)).rejects.toThrowError("Name is required");
     });
 })

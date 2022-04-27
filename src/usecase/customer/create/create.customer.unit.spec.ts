@@ -44,7 +44,7 @@ describe("Unit test create customer use case", () => {
 
         input.name = "";
 
-        expect(async () => await customerCreateUseCase.execute(input)).rejects.toThrow("Name is required");
+        await expect(() => customerCreateUseCase.execute(input)).rejects.toThrow("Name is required");
     });
 
     it("should throw an error when street is missing", async () => {
@@ -53,6 +53,6 @@ describe("Unit test create customer use case", () => {
 
         input.address.street = "";
 
-        expect(async () => await customerCreateUseCase.execute(input)).rejects.toThrow("Street is required");
+        await expect(() => customerCreateUseCase.execute(input)).rejects.toThrow("Street is required");
     })
 })
